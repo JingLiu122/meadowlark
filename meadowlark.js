@@ -1,4 +1,5 @@
 var express = require('express');
+var fortune = require('./lib/fortune.js');
 
 var app = express();
 
@@ -28,18 +29,21 @@ app.get('/', function(req, res){
 });
 
 // Dynamic Content in Views section
-var fortunes = [
+// the fortune array has been moved to node_modules/lib/fortune.js for performing "creating your own module".
+/*var fortunes = [
 	"Conquer your fears or they will conquer you.", 
 	"Rivers need springs.",
 	"Do not fear what you don't know.",
 	"You will have a pleasant surprise.", 
 	"Whenever possible, keep it simple."
-];
+];*/
+
 app.get('/about', function(req, res){
 	/*res.type('text/plain');
 	res.send('About Meadowlark Travel');*/
-	var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-	res.render('about', { fortunes: randomFortune });
+	//var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+	//res.render('about', { fortunes: randomFortune });
+	res.render('about', { fortunes: fortune.getFortune()});
 });
 //*********************************************************************************************************************
 
