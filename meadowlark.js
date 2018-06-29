@@ -1,4 +1,5 @@
 var express = require('express');
+var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 var fortune = require('./lib/fortune.js');
 
 var app = express();
@@ -6,7 +7,6 @@ var app = express();
 //******************************************************
 // This is for the view and layout section.
 // set up handlebars view engine
-var handlebars = require('express3-handlebars').create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 //******************************************************
@@ -18,6 +18,16 @@ app.use(express.static(__dirname + '/public'));
 //*************************************************************
 
 
+//**************************************************************************************************************
+// Middleware to detect test=1 in the querystring for page testing
+app.use(function(req, res, next){
+	res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
+	next();
+});
+//**************************************************************************************************************
+
+
+
 app.set('port', process.env.PORT || 3000);
 
 //*********************************************************************************************************************
@@ -25,7 +35,7 @@ app.set('port', process.env.PORT || 3000);
 app.get('/', function(req, res){
 	/*res.type('text/plain');
 	res.send('Meadowlark Travel');*/
-	res.render('home');
+	res.render('home', {pageTestScript: '/qa/tests-global.js'});
 });
 
 // Dynamic Content in Views section
@@ -43,10 +53,16 @@ app.get('/about', function(req, res){
 	res.send('About Meadowlark Travel');*/
 	//var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
 	//res.render('about', { fortunes: randomFortune });
-	res.render('about', { fortunes: fortune.getFortune()});
+	res.render('about', { fortunes: fortune.getFortune(), pageTestScript: '/qa/tests-about.js'} );
 });
 //*********************************************************************************************************************
 
+app.get('/tours/hood-river', function(req, res){
+	res.render('tours/hood-river');
+});
+app.get('/tours/request-group-rate', function(req, res){
+	res.render('tours/request-group-rate');
+});
 
 //*********************************************************************************************************************
 // custom 404 page
