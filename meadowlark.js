@@ -30,6 +30,9 @@ app.use(function(req, res, next){
 
 app.set('port', process.env.PORT || 3000);
 
+if(app.get('port') == null)
+	console.log('bleat!');
+
 //*********************************************************************************************************************
 // replace res.type and res.send (old routes) to res.render (new routes) that use the view from the views directory
 app.get('/', function(req, res){
@@ -47,22 +50,29 @@ app.get('/', function(req, res){
 	"You will have a pleasant surprise.", 
 	"Whenever possible, keep it simple."
 ];*/
-
 app.get('/about', function(req, res){
 	/*res.type('text/plain');
 	res.send('About Meadowlark Travel');*/
 	//var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
 	//res.render('about', { fortunes: randomFortune });
-	res.render('about', { fortunes: fortune.getFortune(), pageTestScript: '/qa/tests-about.js'} );
+	res.render('about', { fortunes: fortune.getFortune(), pageTestScript: '/qa/tests-about.js'});
 });
-//*********************************************************************************************************************
 
+app.get('/contact', function(req, res){
+	res.render('contact');
+});
+
+
+
+// routes for tour pages
 app.get('/tours/hood-river', function(req, res){
 	res.render('tours/hood-river');
 });
 app.get('/tours/request-group-rate', function(req, res){
 	res.render('tours/request-group-rate');
 });
+//*********************************************************************************************************************
+
 
 //*********************************************************************************************************************
 // custom 404 page
@@ -90,3 +100,5 @@ app.listen(app.get('port'), function(){
 	console.log( 'Express started on http://localhost:' + 
 		app.get('port') + '; press Ctrl-C to terminate.');
 });
+
+
