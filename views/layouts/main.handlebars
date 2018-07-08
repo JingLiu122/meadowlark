@@ -5,11 +5,14 @@
 	{{#if showTests}}
 			<link ref="stylesheet" href="/vendor/mocha.css">
 	{{/if}}
-	<script src="//code.jquery.com/jquery-2.0.2.min.js"></script>
 </head>
 <body>
-	{{{body}}}
 	<head><img src="/img/logo1.png" alt="Meadowlark Travel Logo"></head>
+	{{{body}}}
+	
+	<script src="//code.jquery.com/jquery-2.0.2.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/vendor/js/jquery-2.1.1.min.js"><\/script>')</script>
+	{{{_sections.jquery}}}
 
 	{{#if showTests}}
 			<div id="mocha"></div>
