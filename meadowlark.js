@@ -1,10 +1,24 @@
+// Require/import the necessary libraries for the webapp.
+// (1) express - this provides the express web framework
+// (2) handlebars - this provides the handlebars templating framework
+// (3) fortune - this provides the fortune random generator framework 
 var express = require('express');
+var handlebars = require('express-handlebars');
 var fortune = require('./lib/fortune.js');
 
+//**********************************************************************
+// EXPRESS APP SETUP          
+//**********************************************************************
+
+// Create app object and invoke the express() exported by the Express module to have a web application.
 var app = express();
 
-// set up handlebars view engine
-var handlebars = require('express-handlebars').create({
+//**********************************************************************
+// This is for the view and layout section.
+// Set up handlebars for view engine.
+// set the app's view engine to 'handlebars'.
+// Then set the app variable 'view engine' to 'handlebars'
+var view = handlebars.create({
 	defaultLayout:'main',
 	helpers: {
         section: function(name, options){
@@ -13,39 +27,29 @@ var handlebars = require('express-handlebars').create({
             return null;
         }
     }
-});
-
-//******************************************************
-// This is for the view and layout section.
-// set up handlebars view engine
-app.engine('handlebars', handlebars.engine);
+}); 
+app.engine('handlebars', view.engine);
 app.set('view engine', 'handlebars');
-//******************************************************
 
-
-//*************************************************************
+//**********************************************************************
 // add static middleware section--logo image.
 app.use(express.static(__dirname + '/public'));
-//*************************************************************
 
-
-//**************************************************************************************************************
+//**********************************************************************
 // Middleware to detect test=1 in the querystring for page testing
 app.use(function(req, res, next){
 	res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
 	next();
 });
-//**************************************************************************************************************
-
-
 
 app.set('port', process.env.PORT || 3000);
 
 if(app.get('port') == null)
 	console.log('bleat!');
 
-//*********************************************************************************************************************
-// replace res.type and res.send (old routes) to res.render (new routes) that use the view from the views directory
+//**********************************************************************
+// replace res.type and res.send (old routes) to res.render (new routes) 
+// that use the view from the views directory
 app.get('/', function(req, res){
 	/*res.type('text/plain');
 	res.send('Meadowlark Travel');*/
@@ -73,8 +77,6 @@ app.get('/contact', function(req, res){
 	res.render('contact');
 });
 
-
-
 // routes for tour pages
 app.get('/tours/hood-river', function(req, res){
 	res.render('tours/hood-river');
@@ -85,10 +87,10 @@ app.get('/tours/oregon-coast', function(req, res){
 app.get('/tours/request-group-rate', function(req, res){
 	res.render('tours/request-group-rate');
 });
-//*********************************************************************************************************************
 
 
-//*********************************************************************************************************************
+
+//**********************************************************************
 // custom 404 page
 // 404 catch-all handler (middleware)
 app.use(function(req, res){
@@ -107,7 +109,6 @@ app.use(function(err, req, res, next){
 	//res.send('500 - Sever Error');
 	res.render('500');
 });
-//*********************************************************************************************************************
 
 
 app.listen(app.get('port'), function(){
