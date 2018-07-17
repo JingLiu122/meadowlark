@@ -16,7 +16,7 @@ var app = express();
 //**********************************************************************
 // This is for the view and layout section.
 // Set up handlebars for view engine.
-// set the app's view engine to 'handlebars'.
+// set the app's view engine to 'handlebars'. Map view engine to handlebars.
 // Then set the app variable 'view engine' to 'handlebars'
 var view = handlebars.create({
 	defaultLayout:'main',
@@ -88,6 +88,16 @@ app.get('/tours/request-group-rate', function(req, res){
 	res.render('tours/request-group-rate');
 });
 
+//**********************************************************************
+// a very simple Express route to display the information that the 
+// browser is sending.
+app.get('/headers', function(req, res){
+	res.set('Centent-type', 'text/plain');
+	var s = '';
+	for(var name in req.headers) 
+		s += name + ': ' + req.headers[name] + '\n';
+	res.send(s);
+});
 
 
 //**********************************************************************
