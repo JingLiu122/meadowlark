@@ -10,7 +10,7 @@ var fortune = require('./lib/fortune.js');
 // EXPRESS APP SETUP          
 //**********************************************************************
 
-// Create app object and invoke the express() exported by the Express module to have a web application.
+// Create app object and invoke the express() that exported by the Express module to have a web application.
 var app = express();
 
 //**********************************************************************
@@ -43,9 +43,47 @@ app.use(function(req, res, next){
 });
 
 app.set('port', process.env.PORT || 3000);
-
 if(app.get('port') == null)
 	console.log('bleat!');
+
+//**********************************************************************
+// Ch.7/Partials - want this weather component to be reusable on any 
+// page we wanted.
+// Created a function to get current weather data -- dummy data.
+function getWeatherData(){
+	return {
+		locations: [
+			{
+				name: 'Portland',
+				forecastUrl: 'http://www.wunderground.com/US/OR/Portland.html',
+				iconUrl: 'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+				weather: 'Overcast',
+				temp: '54.1 F (12.4 C)'
+			},
+			{
+				name: 'Bend',
+				forecastUrl: 'http://www.wunderground.com/US/OR/Bend.html',
+				iconUrl: 'http://icons-ak.wxug.com/i/c/k/partlycloudy.gif',
+				weather: 'Partly Cloudy',
+				temp: '55.0 F (12.8 C)'
+			},
+			{
+				name: 'Manzanita',
+				forecastUrl: 'http://www.wunderground.com/US/OR/Manzanita.html',
+				iconUrl: 'http://icons-ak.wxug.com/i/c/k/rain.gif',
+				weather: 'Light Rain',
+				temp: '55.0 F (12.8 C)'
+			}
+		]
+	};
+}
+// Create a middleware to inject this data into the res.locals.partials object.
+app.use(function(req, res, next){
+	if(!res.locals.partials)
+		res.locals.partials = {};
+	res.locals.partials.weatherContext = getWeatherData();
+	next();
+});
 
 //**********************************************************************
 // replace res.type and res.send (old routes) to res.render (new routes) 
@@ -53,7 +91,7 @@ if(app.get('port') == null)
 app.get('/', function(req, res){
 	/*res.type('text/plain');
 	res.send('Meadowlark Travel');*/
-	res.render('home', {pageTestScript: '/qa/tests-global.js'});
+	res.render('home');
 });
 
 // Dynamic Content in Views section
@@ -89,10 +127,13 @@ app.get('/tours/request-group-rate', function(req, res){
 });
 
 //**********************************************************************
+////////////////////////////////////////////////////////////////////////
+///////////////Ch. 6 - The Request and Response Objects/////////////////
+////////////////////////////////////////////////////////////////////////
 // a very simple Express route to display the information that the 
 // browser is sending.
 app.get('/headers', function(req, res){
-	res.set('Centent-type', 'text/plain');
+	res.set('Content-type', 'text/plain');
 	var s = '';
 	for(var name in req.headers) 
 		s += name + ': ' + req.headers[name] + '\n';
@@ -118,6 +159,16 @@ app.use(function(err, req, res, next){
 	res.status(500);
 	//res.send('500 - Sever Error');
 	res.render('500');
+});
+
+// Example 6-3. Passing a context to a view, including querystring, cookie, and session values.
+app.get('/greeting', function(req, res){
+	res.render('about', {
+		message: 'welcome',
+		style: req.query.style,
+		userid: req.cookie.userid,
+		username: req.session.username,
+	});
 });
 
 
